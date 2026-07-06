@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Generatore Giudizi Finali — Allievi Marescialli</title>
+<style>
+  :root{
+    --ink:#1a2233; --ink-soft:#4a5568; --paper:#fbfaf7; --panel:#ffffff;
+    --line:#d9d4c8; --line-soft:#ece8dd; --accent:#5a2a2a; --accent-2:#1f3a5f;
+    --good:#2f6b46; --low:#9a3b2f;
+    --shadow:0 1px 2px rgba(26,34,51,.06),0 4px 16px rgba(26,34,51,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+  header.mast{border-bottom:2px solid var(--accent);padding-bottom:16px;margin-bottom:22px}
+  header.mast .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  header.mast .eyebrow .ver{float:right;letter-spacing:.04em;color:var(--ink-soft);font-weight:600;text-transform:none;background:var(--line-soft);padding:2px 8px;border-radius:20px}
+  header.mast h1{font-family:Georgia,"Times New Roman",serif;font-size:26px;margin:6px 0 4px;font-weight:600}
+  header.mast p{margin:0;color:var(--ink-soft);font-size:13.5px;max-width:74ch}
+
+  .layout{display:grid;grid-template-columns:1fr 420px;gap:26px;align-items:start}
+  @media(max-width:940px){.layout{grid-template-columns:1fr}}
+
+  .meta{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+    margin-bottom:20px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+  @media(max-width:640px){.meta{grid-template-columns:1fr 1fr}}
+  .meta label,.fld{display:flex;flex-direction:column;gap:4px;font-size:11px;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--ink-soft);font-weight:600}
+  .meta input,.meta select,.fld input,.fld select{font-size:14px;padding:7px 9px;border:1px solid var(--line);
+    border-radius:6px;background:#fff;color:var(--ink);font-family:inherit;text-transform:none;letter-spacing:normal;font-weight:400}
+  .meta input:focus,.meta select:focus,.fld input:focus,.fld select:focus{outline:2px solid var(--accent-2);border-color:var(--accent-2)}
+
+  .part{margin-bottom:22px}
+  .part>h2{font-family:Georgia,serif;font-size:15px;font-weight:600;color:var(--accent-2);margin:0 0 2px;display:flex;align-items:baseline;gap:10px}
+  .part>h2 .num{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--accent);border:1px solid var(--line);border-radius:4px;padding:2px 6px}
+  .part>.sub{font-size:12px;color:var(--ink-soft);margin:0 0 12px}
+  .q{background:var(--panel);border:1px solid var(--line-soft);border-radius:9px;padding:11px 13px;margin-bottom:9px;box-shadow:var(--shadow)}
+  .q-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .q-idx{font-size:11px;font-weight:700;color:#fff;background:var(--accent-2);min-width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center}
+  .q-name{font-weight:600;font-size:13.5px}
+  .scale{display:flex;gap:6px;flex-wrap:wrap}
+  .opt{flex:1 1 0;min-width:120px}
+  .opt input{position:absolute;opacity:0;pointer-events:none}
+  .opt label{display:flex;gap:8px;align-items:flex-start;cursor:pointer;border:1px solid var(--line);border-radius:7px;
+    padding:7px 9px;font-size:12px;line-height:1.35;color:var(--ink-soft);height:100%;transition:.12s;background:#fff}
+  .opt label .lvl{font-weight:700;font-size:11px;color:#fff;background:#b8b1a1;min-width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px}
+  .opt label:hover{border-color:var(--accent-2)}
+  .opt input:checked+label{border-color:var(--accent-2);background:#f2f6fb;color:var(--ink);font-weight:500;box-shadow:inset 0 0 0 1px var(--accent-2)}
+  .opt input:checked+label .lvl{background:var(--accent-2)}
+  .opt input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+  .opt[data-l="1"] input:checked+label .lvl,.opt[data-l="2"] input:checked+label .lvl{background:var(--low)}
+  .opt[data-l="4"] input:checked+label .lvl,.opt[data-l="5"] input:checked+label .lvl{background:var(--good)}
+
+  /* pannello incarichi/profitto */
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:22px}
+  .panel h2{font-family:Georgia,serif;font-size:15px;font-weight:600;color:var(--accent-2);margin:0 0 12px}
+  .panel h3{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin:16px 0 8px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip input{position:absolute;opacity:0;pointer-events:none}
+  .chip label{display:inline-block;cursor:pointer;border:1px solid var(--line);border-radius:20px;padding:6px 13px;font-size:12.5px;color:var(--ink-soft);background:#fff;transition:.12s}
+  .chip label:hover{border-color:var(--accent-2)}
+  .chip input:checked+label{background:var(--accent-2);color:#fff;border-color:var(--accent-2)}
+  .chip input:focus-visible+label{outline:2px solid var(--accent);outline-offset:2px}
+  .incrow{display:grid;grid-template-columns:1fr 1.5fr auto;gap:8px;margin-bottom:8px;align-items:center}
+  @media(max-width:640px){.incrow{grid-template-columns:1fr 1fr auto}}
+  .incrow select{font-size:13.5px;padding:8px 9px;border:1px solid var(--line);border-radius:6px;background:#fff;font-family:inherit;color:var(--ink)}
+  .incrow select:focus{outline:2px solid var(--accent-2);border-color:var(--accent-2)}
+  .incrow .incDel{border:1px solid var(--line);background:#fff;color:var(--low);border-radius:6px;cursor:pointer;padding:8px 11px;font-size:13px;line-height:1}
+  .incrow .incDel:hover{border-color:var(--low)}
+  .addbtn{font-family:inherit;font-size:12.5px;cursor:pointer;background:#fff;border:1px dashed var(--accent-2);color:var(--accent-2);border-radius:7px;padding:8px 13px;margin-top:2px}
+  .addbtn:disabled{opacity:.55;cursor:default;border-style:solid;color:var(--ink-soft);border-color:var(--line)}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media(max-width:640px){.grid3{grid-template-columns:1fr}}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .rowline{display:grid;grid-template-columns:1fr 130px 130px;gap:12px;align-items:end}
+  @media(max-width:640px){.rowline{grid-template-columns:1fr}}
+
+  .out{position:sticky;top:16px}
+  .out .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);overflow:hidden}
+  .out .card h3{margin:0;padding:13px 16px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--accent);font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  .badge{font-size:11px;letter-spacing:.06em;background:rgba(255,255,255,.16);padding:3px 9px;border-radius:20px;font-weight:600}
+  .controls{padding:10px 16px;border-bottom:1px solid var(--line-soft);font-size:12px;color:var(--ink-soft)}
+  #giudizio,#giudizioRev{width:100%;min-height:300px;border:none;resize:vertical;padding:16px;font-family:Georgia,serif;font-size:14px;line-height:1.62;color:var(--ink);background:#fff;display:block}
+  #giudizio:focus,#giudizioRev:focus{outline:none}
+  .out .foot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line-soft);flex-wrap:wrap}
+  button.act{font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border-radius:7px;padding:9px 13px;border:1px solid var(--accent-2);background:var(--accent-2);color:#fff;transition:.12s}
+  button.act.ghost{background:#fff;color:var(--accent-2)}
+  button.act:hover{filter:brightness(1.08)} button.act.ghost:hover{background:#f2f6fb}
+  .synthesis{padding:10px 16px;font-size:12px;color:var(--ink-soft);border-top:1px solid var(--line-soft)}
+  .synthesis b{color:var(--ink)}
+  .hint{font-size:12px;color:var(--ink-soft);margin:14px 0 0}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .toolbar button{font-family:inherit;font-size:12.5px;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:7px;padding:7px 12px;color:var(--ink-soft)}
+  .toolbar button:hover{border-color:var(--accent-2);color:var(--accent-2)}
+  .toolbar .tbsep{flex:1 1 auto;min-width:8px}
+  .tbrank{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft)}
+  .tbrank input{width:78px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-family:inherit;font-size:13.5px;color:var(--ink)}
+  .tbrank input:focus{outline:2px solid var(--accent-2);border-color:var(--accent-2)}
+  .rankhint{margin:0 0 18px}
+  .capbar{margin:0 0 18px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.02)}
+  .capinfo{font-size:12.5px;color:var(--ink-soft);margin-bottom:7px}
+  .capchips{display:flex;gap:6px;flex-wrap:wrap}
+  .capchip{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-soft)}
+  .capchip b{font-variant-numeric:tabular-nums}
+  .capchip.full{background:#e7f0ea;border-color:#8fbfa5;color:#16624a}
+  .capchip.over{background:#fbeae0;border-color:#e0a080;color:#c2410c}
+  .capwarn{font-size:12px;color:#c2410c;font-weight:600;margin-top:8px}
+  .copied{color:var(--good);font-size:12px;font-weight:600;align-self:center}
+
+  .regnote{font-size:12px;color:var(--ink-soft);margin:0 0 12px;line-height:1.45}
+  .regcount{font-size:12.5px;color:var(--ink);margin:12px 0 0;font-weight:600}
+  /* ===== ottimizzazione mobile ===== */  html{-webkit-text-size-adjust:100%}
+  .fab{position:fixed;right:14px;bottom:16px;z-index:60;display:none;align-items:center;gap:6px;
+    background:var(--accent);color:#fff;border:none;border-radius:26px;padding:13px 18px;font-family:inherit;
+    font-size:14px;font-weight:700;box-shadow:0 6px 20px rgba(26,34,51,.28);cursor:pointer}
+  .fab:active{filter:brightness(1.1)}
+  @media(max-width:940px){
+    .out{position:static}
+    .fab{display:inline-flex}
+    .out .card{scroll-margin-top:12px}
+  }
+  @media(max-width:640px){
+    .wrap{padding:16px 12px 90px}
+    header.mast h1{font-size:22px}
+    header.mast .eyebrow .ver{float:none;display:inline-block;margin-top:6px}
+    .meta{grid-template-columns:1fr;padding:14px}
+    .panel{padding:14px}
+    /* opzioni qualità a tutta larghezza: più leggibili e facili da toccare */
+    .opt{flex:1 1 100%;min-width:0}
+    .opt label{padding:10px 12px;font-size:13.5px}
+    .opt label .lvl{width:20px;height:20px}
+    /* evita lo zoom automatico su iOS al focus (font >= 16px) */
+    .meta input,.meta select,.fld input,.fld select,.incrow select,.tbrank input,#giudizio,#giudizioRev{font-size:16px}
+    .q-name{font-size:14px}
+    .toolbar{gap:8px}
+    .toolbar button,.addbtn{padding:10px 14px}
+    .out .foot button.act{flex:1 1 auto;text-align:center;padding:12px 12px}
+    #giudizio,#giudizioRev{min-height:240px}
+    .tbrank input{width:70px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="eyebrow">Scheda valutativa · Giudizio del compilatore <span class="ver">versione 06/07/2026 · rev. 23 · mobile</span></div>
+    <h1>Generatore del giudizio finale</h1>
+    <p>Seleziona i livelli 1–5 delle qualità, indica gli incarichi svolti e i risultati: il giudizio viene composto nello stile del compilatore, in un unico paragrafo scorrevole. Il testo rielabora le voci, non le ricopia.</p>
+  </header>
+
+  <div class="meta">
+    <div style="grid-column:1/-1">
+      <div style="font-size:12px;letter-spacing:.04em;color:var(--ink-soft);font-weight:600;margin-bottom:6px">Selezione allievo dall'elenco compagnia — opzionale (puoi sempre compilare a mano)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px">
+        <select id="s_plotone"><option value="">Plotone…</option></select>
+        <select id="s_squadra"><option value="">Squadra…</option></select>
+        <select id="s_allievo"><option value="">Allievo…</option></select>
+      </div>
+    </div>
+    <label style="grid-column:1/-1">Grado
+      <select id="m_grado">
+        <option value="Carabiniere Allievo Maresciallo">Carabiniere Allievo Maresciallo</option>
+        <option value="Carabiniere Scelto Allievo Maresciallo">Carabiniere Scelto Allievo Maresciallo</option>
+      </select>
+    </label>
+    <label>Nome
+      <input id="m_nome" type="text" placeholder="Nome">
+    </label>
+    <label>Cognome
+      <input id="m_cognome" type="text" placeholder="Cognome">
+    </label>
+  </div>
+
+  <div class="toolbar">
+    <button id="btnTutti3" type="button">Imposta qualità su «3»</button>
+    <button id="btnReset" type="button">Azzera tutto</button>
+    <span class="tbsep"></span>
+    <label class="tbrank">Graduatoria — pos. <input id="p_pos" type="number" min="1" max="656"></label>
+    <button id="btnFromRank" type="button" class="addbtn" style="margin-top:0">↧ Compila qualità dalla posizione</button>
+    <button id="btnRiequilibra" type="button" style="margin-top:0">⇄ Riequilibra nei tetti</button>
+  </div>
+  <p class="hint rankhint">La posizione (1–656) determina la fascia e i tetti massimi di aggettivazioni per livello. Ogni clic su «Compila» genera una distribuzione casuale valida; puoi correggere le singole voci, ma i tetti della fascia non si possono superare.</p>
+  <div id="capBar" class="capbar" style="display:none"></div>
+
+  <div class="layout">
+    <div>
+      <div id="form"></div>
+
+      <section class="panel">
+        <h2>Incarichi, attività e profitto</h2>
+
+        <h3>Incarichi svolti (fino a 5, con relativa valutazione)</h3>
+        <div id="incRows"></div>
+        <button id="addInc" type="button" class="addbtn">+ Aggiungi incarico</button>
+
+        <h3>Attività di supporto (facoltative)</h3>
+        <div class="chips" id="extra"></div>
+
+        <h3>Profitto</h3>
+        <div class="grid3">
+          <div class="fld">Materie universitarie<select id="p_univ"></select></div>
+          <div class="fld">Tecnico-professionali<select id="p_tec"></select></div>
+          <div class="fld">Ginnico-sportive<select id="p_gin"></select></div>
+        </div>
+        <div class="fld" style="margin-top:12px;max-width:340px">Valutazione complessiva (chiusura)<select id="p_val"></select></div>
+      </section>
+    </div>
+
+    <aside class="out" id="outPanel">
+      <div class="card">
+        <h3>Giudizio del compilatore <span class="badge" id="overallBadge">—</span></h3>
+        <div class="controls">Due giudizi autonomi (compilatore e 1º revisore), diversi nelle parole ma coincidenti nel merito. «↻ Ricomponi» genera ogni volta una versione diversa: utile per due allievi con caratteristiche simili.</div>
+        <textarea id="giudizio" spellcheck="true" placeholder="Il giudizio del compilatore si comporrà qui…"></textarea>
+        <div class="synthesis" id="synthesis"></div>
+        <div class="foot">
+          <button class="act" id="btnLocal" type="button">↻ Ricomponi (varia)</button>
+          <button class="act ghost" id="btnCopy" type="button">Copia compilatore</button>
+          <button class="act ghost" id="btnCopyBoth" type="button">Copia entrambi</button>
+          <button class="act ghost" id="btnPrint" type="button">Stampa</button>
+          <span class="copied" id="copiedMsg" style="display:none">Copiato ✓</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="background:var(--accent-2)">Giudizio del 1º revisore</h3>
+        <textarea id="giudizioRev" spellcheck="true" placeholder="Il giudizio del 1º revisore si comporrà qui…"></textarea>
+        <div class="foot">
+          <button class="act ghost" id="btnCopyRev" type="button">Copia</button>
+          <span class="copied" id="copiedMsgRev" style="display:none">Copiato ✓</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="background:var(--good)">Registro Excel</h3>
+        <div style="padding:14px 16px">
+          <p class="regnote">Salva Grado, Nome, Cognome, il livello scelto per ogni qualità (1–5) e i due giudizi in un file Excel. Il registro resta sul tuo dispositivo: chi apre il link ha il proprio, separato dagli altri.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="act" id="btnAddReg" type="button">➕ Aggiungi / aggiorna allievo</button>
+            <button class="act ghost" id="btnXlsx" type="button">⬇ Scarica Excel</button>
+            <button class="act ghost" id="btnClearReg" type="button">Svuota</button>
+          </div>
+          <p class="regcount" id="regCount"></p>
+        </div>
+      </div>
+
+      <p class="hint">I testi sono modificabili prima di copiarli. Nulla viene salvato: chiudendo la pagina i dati si azzerano.</p>
+    </aside>
+  </div>
+</div>
+
+<button class="fab" id="fabResult" type="button">Giudizio ↓</button>
+
+<script>
+/* ===================== DATI QUALITÀ (15 voci) ===================== */
+const PARTS = [
+  { num:"Parte I", titolo:"Qualità fisiche, morali e di carattere", qualita:[
+    {id:1, nome:"Aspetto esteriore", liv:["dimesso e trascurato","non sempre decoroso","decoroso e dignitoso","distinto nel portamento","aspetto impeccabile e brillante"]},
+    {id:2, nome:"Vigore fisico", liv:["si affatica anche in situazioni normali","resistenza non sempre durevole","soddisfacente forma fisica","energico e resistente oltre la media","sempre forte e vigoroso anche in situazioni critiche"]},
+    {id:3, nome:"Vigore mentale e concentrazione", liv:["si affatica e si deconcentra facilmente","talvolta cede nella concentrazione","concentrazione soddisfacente","resiste ottimamente all'affaticamento mentale","instancabile anche nel disagio"]},
+    {id:4, nome:"Esemplarità", liv:["difficoltà ad uniformarsi ai valori etici","non sempre esemplare","valori positivi nei rapporti di servizio","buon esempio di correttezza e rettitudine","massimi valori etici militari"]},
+    {id:5, nome:"Forza di carattere e determinazione", liv:["arrendevole e influenzabile","titubante","sufficientemente determinato","molto determinato e sicuro","affronta ogni situazione con decisione e fermezza"]},
+    {id:6, nome:"Coraggio", liv:["insicurezza","perplessità nelle situazioni di rischio","sufficientemente fermo","determinato nelle situazioni di rischio","ardito e sicuro in ogni circostanza"]},
+    {id:7, nome:"Lealtà", liv:["intenti poco espliciti","non pienamente trasparente","sufficientemente schietto","sicuramente leale e sincero","di cristallina lealtà"]},
+  ]},
+  { num:"Parte II", titolo:"Qualità intellettuali e culturali", qualita:[
+    {id:11, nome:"Aggiornamento culturale", liv:["scarso interesse all'aggiornamento","aggiornamenti superficiali","segue gli argomenti d'attualità","ben preparato su tematiche ampie","vasto patrimonio di conoscenze"]},
+  ]},
+  { num:"Parte III", titolo:"Qualità professionali", qualita:[
+    {id:13, nome:"Preparazione professionale", liv:["inadeguata","superficiale, con lacune","sufficiente e adeguata","solida e aggiornata","vasta e diversificata"]},
+    {id:16, nome:"Lavoro di gruppo", liv:["fa prevalere le proprie idee","non sempre collaborativo","collabora costruttivamente","portato alla collaborazione","protagonista nella soluzione comune"]},
+    {id:18, nome:"Motivazione e dedizione", liv:["carente di motivazione","difetta di coinvolgimento","sufficientemente motivato","cerca sempre di dare il meglio","dedizione all'Istituzione senza risparmio"]},
+    {id:19, nome:"Affidabilità", liv:["non offre garanzie","necessita di sollecitazioni","generalmente affidabile","assolve scrupolosamente i compiti","assolutamente affidabile"]},
+    {id:20, nome:"Iniziativa", liv:["difficoltà ad agire senza indicazioni","non sempre autonomo","normalmente intraprendente","efficace e solerte","tempestivo anche nelle situazioni critiche"]},
+    {id:23, nome:"Riservatezza", liv:["superficiale","non sempre riservato","riservato nell'essenziale","molto riservato","assolutamente riservato"]},
+    {id:24, nome:"Senso della disciplina", liv:["poco rispettoso delle regole","esclusivamente formale","rispettoso delle regole","spiccato","altissimo e profondamente sentito"]},
+  ]},
+];
+const OVERALL = ["Insufficiente","Non sempre adeguato","Soddisfacente","Molto buono","Ottimo"];
+const TOTQ = PARTS.reduce((n,p)=>n+p.qualita.length,0);
+
+/* ===================== FASCE GRADUATORIA (tetti crocette per livello) =====================
+   Fascia = intervallo di posizione in graduatoria di Btg. (1–656).
+   cap[livello] = numero MAX di qualità assegnabili a quel livello.
+   5=eccellente · 4=superiore alla media · 3=nella media · 2=inferiore alla media · 1=insufficiente.
+   La somma dei cap è sempre 15 = numero delle qualità (una aggettivazione per qualità). */
+const FASCE = [
+  {min:1,  max:10,  cap:{5:9,4:6, 3:0, 2:0,1:0}, macro:"Ottimo"},
+  {min:11, max:20,  cap:{5:8,4:7, 3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:21, max:30,  cap:{5:7,4:8, 3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:31, max:40,  cap:{5:6,4:9, 3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:41, max:50,  cap:{5:5,4:10,3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:51, max:60,  cap:{5:4,4:11,3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:61, max:70,  cap:{5:3,4:12,3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:71, max:80,  cap:{5:2,4:13,3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:81, max:90,  cap:{5:1,4:14,3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:91, max:100, cap:{5:0,4:15,3:0, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:101,max:110, cap:{5:0,4:14,3:1, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:111,max:120, cap:{5:0,4:13,3:2, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:121,max:130, cap:{5:0,4:12,3:3, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:131,max:140, cap:{5:0,4:11,3:4, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:141,max:150, cap:{5:0,4:10,3:5, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:151,max:176, cap:{5:0,4:9, 3:6, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:177,max:202, cap:{5:0,4:8, 3:7, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:203,max:228, cap:{5:0,4:7, 3:8, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:229,max:269, cap:{5:0,4:6, 3:9, 2:0,1:0}, macro:"Superiore alla media"},
+  {min:270,max:320, cap:{5:0,4:5, 3:10,2:0,1:0}, macro:"Superiore alla media"},
+  {min:321,max:371, cap:{5:0,4:4, 3:11,2:0,1:0}, macro:"Superiore alla media"},
+  {min:372,max:422, cap:{5:0,4:3, 3:12,2:0,1:0}, macro:"Superiore alla media"},
+  {min:423,max:473, cap:{5:0,4:2, 3:13,2:0,1:0}, macro:"Nella media"},
+  {min:474,max:524, cap:{5:0,4:1, 3:14,2:0,1:0}, macro:"Nella media"},
+  {min:525,max:560, cap:{5:0,4:0, 3:15,2:0,1:0}, macro:"Nella media"},
+  {min:561,max:586, cap:{5:0,4:0, 3:14,2:1,1:0}, macro:"Nella media"},
+  {min:587,max:607, cap:{5:0,4:0, 3:13,2:2,1:0}, macro:"Nella media"},
+  {min:608,max:628, cap:{5:0,4:0, 3:12,2:3,1:0}, macro:"Nella media"},
+  {min:629,max:649, cap:{5:0,4:0, 3:11,2:4,1:0}, macro:"Nella media"},
+  {min:650,max:656, cap:{5:0,4:0, 3:10,2:5,1:0}, macro:"Nella media"},
+];
+const LIV_NOMI={5:"Eccellente",4:"Superiore",3:"Nella media",2:"Inferiore",1:"Insufficiente"};
+const MACRO_VAL={"Ottimo":8,"Superiore alla media":6,"Nella media":3}; // indici in VALFIN per la valutazione di chiusura derivata dalla macro-fascia
+
+/* ===================== ELENCO COMPAGNIA (selezione allievo) =====================
+   Ogni membro: [nome, cognome, plotone, squadra]. Grado = Carabiniere Allievo Maresciallo per tutti. */
+const ROSTER = [
+["Massimiliano", "GRANATA", 1, 1],
+["Daniele", "GRAZIANI", 1, 1],
+["Luigi", "GUERRIERI", 1, 1],
+["Mariangela", "GUIDA", 1, 1],
+["Paolo", "GUIDA", 1, 1],
+["Ruggero", "GUTTORIELLO", 1, 1],
+["Andrea", "IAVAZZO", 1, 1],
+["Marco", "IACOBELLI", 1, 1],
+["Antonio", "IAMMARINO", 1, 1],
+["Emanuele", "IMPROTA", 1, 1],
+["Domenico", "INCANTALUPO", 1, 1],
+["Gabriele", "MASSARELLI", 1, 1],
+["Gabriele", "MASSARO", 1, 1],
+["Michael", "MASSIMILLA", 1, 1],
+["Francesca", "MASSINI", 1, 1],
+["Emilio", "MAURI", 1, 1],
+["Clarissa", "MAZZOTTA", 1, 1],
+["Riccardo", "MAZZU’", 1, 1],
+["Mattia", "MECCA", 1, 1],
+["Maira", "MELE", 1, 1],
+["Lorenzo", "MELILLI", 1, 1],
+["Giovanni", "MELISI", 1, 1],
+["Antonio", "MELONE", 1, 1],
+["Vincenzo", "MERLO", 1, 1],
+["Gianluca", "MESSINA", 1, 1],
+["Alena", "MICCI", 1, 1],
+["Biagio", "MICCO", 1, 1],
+["Francesca", "MILIONE", 1, 1],
+["Riccardo", "MILUZZI", 1, 1],
+["Brayan", "MINGRONE", 1, 1],
+["Gabriele", "MINIERI", 1, 1],
+["Giulia", "MINUTOLI", 1, 1],
+["Marianna", "MINÁ", 1, 1],
+["Giuseppe", "MIRABELLA", 1, 1],
+["Salvatore", "MIRANTE", 1, 1],
+["Riccardo", "PECORARO", 1, 1],
+["Simone", "CALABRETTA", 1, 2],
+["Samuele", "ELENA", 1, 2],
+["Giorgia", "FIORE", 1, 2],
+["Pasquale", "INCARNATO", 1, 2],
+["Paolo", "IPPOLITONI", 1, 2],
+["Dario", "ISAIA", 1, 2],
+["Marco", "IULIANO", 1, 2],
+["Luca", "IZZO", 1, 2],
+["Vincenzo", "IZZO", 1, 2],
+["Manuel", "LA MOTTA", 1, 2],
+["Pasquale", "LA RUNA", 1, 2],
+["Domenico", "LA SALVIA", 1, 2],
+["Pasquale", "LETTIERI", 1, 2],
+["Mario", "LI CALZI", 1, 2],
+["Antonio", "LICCARDO", 1, 2],
+["Francesco", "LICCIARDELLO", 1, 2],
+["Leonardo", "LIMITI", 1, 2],
+["Luca", "LISO", 1, 2],
+["Benedetto", "LO BUONO", 1, 2],
+["Francesco", "LOCOROTONDO", 1, 2],
+["Lorenzo", "LOMBARDELLI", 1, 2],
+["Chiara", "LOMBARDO", 1, 2],
+["Salvatore", "LONERO", 1, 2],
+["Emily", "LONGO", 1, 2],
+["Fabrizio", "LONGO", 1, 2],
+["Marco", "LONGO", 1, 2],
+["Riccardo", "LORETI", 1, 2],
+["Gianlorenzo", "LOZZI", 1, 2],
+["Enrique", "LUSTRISSIMI", 1, 2],
+["Ruben", "MAGGIONI", 1, 2],
+["Marco", "MAGGIORE", 1, 2],
+["Alice", "MAGNASCO", 1, 2],
+["Giuseppe", "MAIELLO", 1, 2],
+["Gabriele", "MAIENZA", 1, 2],
+["Christian", "MAINOLFI", 1, 2],
+["Manuel", "MAIORANO", 1, 2],
+["Alessandro", "ARDITO", 1, 3],
+["Luigi", "D’AMBROSIO", 1, 3],
+["Lorenzo Renato", "GIACOBBE", 1, 3],
+["Mattia", "LA TONA", 1, 3],
+["Alessandro", "LADISA", 1, 3],
+["Edoardo", "LAMPIS", 1, 3],
+["Roberto Mario", "LAMPIS", 1, 3],
+["Nicolas", "LANCIANO", 1, 3],
+["Emanuele Maria", "MALTA", 1, 3],
+["Alfonso", "MALZONE", 1, 3],
+["Francesco", "MANCUSO", 1, 3],
+["Mariantonietta", "MANCUSO", 1, 3],
+["Rosario", "MANNINO", 1, 3],
+["Emmanuel Danjel", "MANZI", 1, 3],
+["Mattia", "MANZULLO", 1, 3],
+["Luigi Pio", "MARANGOLO", 1, 3],
+["Umberto", "MARANO", 1, 3],
+["Giuseppe", "MARESCA", 1, 3],
+["Alessandro", "MARGARITA", 1, 3],
+["Michele", "MARI", 1, 3],
+["Lorenzo", "MARIGLIANO", 1, 3],
+["Claudia Rita", "MARINO", 1, 3],
+["Alessio", "MARINUCCI", 1, 3],
+["Luigi", "MARRANDINO", 1, 3],
+["Maria Francesca", "MARRAS", 1, 3],
+["Mario", "MARROCCO", 1, 3],
+["Laura", "MARTELLUCCI", 1, 3],
+["Simone", "MARTINI", 1, 3],
+["Manuel", "MASCOLO", 1, 3],
+["Rosangela Maria", "MASSA", 1, 3],
+["Margherita", "MASSARA", 1, 3],
+["Domenico", "PONTASSUGLIA", 1, 3],
+["Martina", "SALERNO", 1, 3],
+["Irene", "SALITA", 1, 3],
+["Giada Maria", "SALONIA", 1, 3],
+["Melissa", "SANACORE", 1, 3],
+["Giorgia Rita Chiara", "D'AMBROSIO", 2, 1],
+["Denis", "MITOLA", 2, 1],
+["Ferdinando", "MOCCIA", 2, 1],
+["Ciro", "MONACO", 2, 1],
+["Mario", "MONGILLO", 2, 1],
+["Vito", "MONNO", 2, 1],
+["Giorgio", "MONTALDI", 2, 1],
+["Mattia", "MONTEROSSO", 2, 1],
+["Francesco", "MONTINARO", 2, 1],
+["Carmen", "RAGONE", 2, 1],
+["Samuele", "RANDISI", 2, 1],
+["Emmanuel", "RAPETTI", 2, 1],
+["Luca", "RASCHIATORE", 2, 1],
+["Daniele", "REFOLO", 2, 1],
+["Lorenzo", "RENELLA", 2, 1],
+["Martina", "RESTA", 2, 1],
+["Alessio", "RICCIARDI", 2, 1],
+["Carmine", "RICCIARDI", 2, 1],
+["Lorenzo", "RINALDI", 2, 1],
+["Gabriele", "RINELLA", 2, 1],
+["Alessandro", "RITROV ATO", 2, 1],
+["Alessia", "ROGGIERO", 2, 1],
+["Alfonso", "ROLLO", 2, 1],
+["Andrea", "ROMA", 2, 1],
+["Gabriele", "ROMOLA", 2, 1],
+["Alessandro", "RONCARATTI", 2, 1],
+["Luca", "ROTUNDO", 2, 1],
+["Valentina", "RUGGIERI", 2, 1],
+["Fabiano", "RUGGIERO", 2, 1],
+["Antonio", "RUSSO", 2, 1],
+["Bruna", "RUSSO", 2, 1],
+["Donato", "RUSSO", 2, 1],
+["Enrico", "RUSSO", 2, 1],
+["Francesco", "RUSSO", 2, 1],
+["Gabriele", "RUSSO", 2, 1],
+["Sofia", "GATTO COSTANTINO", 2, 2],
+["Riccardo", "MORGILLO", 2, 2],
+["Francesco", "MORMOLLI", 2, 2],
+["Giovanni Pio", "MUCCIACITO", 2, 2],
+["Andrea", "MULO", 2, 2],
+["Gabriel", "MUSIZZA", 2, 2],
+["Gianluca Maria", "NAPOLETANO", 2, 2],
+["Nicolò", "NAPOLITANO", 2, 2],
+["Alessandro", "NARDINI", 2, 2],
+["Luigi", "ORLANDO", 2, 2],
+["Vincenzo Luca", "OTTOMANELLI", 2, 2],
+["Andrea", "PACE", 2, 2],
+["Gabriella", "PACE", 2, 2],
+["Irene", "PACE", 2, 2],
+["Matteo", "PACETTI", 2, 2],
+["Alessandro", "PACI", 2, 2],
+["Alice", "PAGLIANI", 2, 2],
+["Simone", "PALLADINO", 2, 2],
+["Alessandro", "PALMIROTTA", 2, 2],
+["Luca", "PALMISANO", 2, 2],
+["Silvia", "PALOMBO", 2, 2],
+["Samuel", "PANARELLA", 2, 2],
+["Emma", "PANZERI", 2, 2],
+["Emanuele", "PAOLUCCI", 2, 2],
+["Mario", "PAPA", 2, 2],
+["Davide", "PAPARELLA", 2, 2],
+["Antonio", "PARISI", 2, 2],
+["Davide", "PARMA", 2, 2],
+["Gaia", "PASSARO", 2, 2],
+["Giuseppe", "PASTORE", 2, 2],
+["Damiano", "PELLEGRINO", 2, 2],
+["Nunzio", "PELLEGRINO", 2, 2],
+["Gaja", "PELÀ", 2, 2],
+["Maria Federica", "PERILLI", 2, 2],
+["Simone", "PERRETTA", 2, 2],
+["Claudio", "PERRONE", 2, 2],
+["Elisa", "PESENTI", 2, 2],
+["Cesare", "LAFRANCESCHINA", 2, 3],
+["Marta", "MORGILLO", 2, 3],
+["Francesco", "NIGRO", 2, 3],
+["Loris", "NIGRO", 2, 3],
+["Danilo", "NIKOLLI", 2, 3],
+["Clarissa Andrea", "NOTARNICOLA", 2, 3],
+["Giulia Maria", "OBERTI", 2, 3],
+["Gabriele", "OBINU", 2, 3],
+["Antonio", "OLERO", 2, 3],
+["Francesco", "OLIVERI", 2, 3],
+["Federico", "ONOFRI", 2, 3],
+["Alessandro", "PETRARCA", 2, 3],
+["Vincenzo", "PETRELLA", 2, 3],
+["Beatrice", "PETRELLI", 2, 3],
+["Nicola", "PETRICCA", 2, 3],
+["Lorenzo", "PETRINI", 2, 3],
+["Antonio", "PEZZULLO", 2, 3],
+["Mattia", "PIANI", 2, 3],
+["Francesco", "PICCIONI", 2, 3],
+["Gianmarco", "PIGATO", 2, 3],
+["Emanuele", "PIGNATARO", 2, 3],
+["Nicola", "PILLONI", 2, 3],
+["Matteo", "PINNA", 2, 3],
+["Lorenzo", "PINTUS", 2, 3],
+["Francesco", "PIRAS", 2, 3],
+["Mattia", "PISANI", 2, 3],
+["Mirko", "PISTIS", 2, 3],
+["Damiano", "PISTONE", 2, 3],
+["Alessia", "PIZZUTO", 2, 3],
+["Nicole", "PLANKENSTEINER", 2, 3],
+["Luca", "POGGIONE", 2, 3],
+["Gianluca", "POGORELLI", 2, 3],
+["Pasquale", "PONTASSUGLIA", 2, 3],
+["Chiara", "PORFIDIA", 2, 3],
+["Soraya", "PRATALI", 2, 3],
+["Samuele", "PRISCO", 2, 3],
+["Candido", "QUATRALE", 2, 3],
+["Alberto", "SABELLA", 3, 1],
+["Luca", "SCAFI", 3, 1],
+["Matteo", "SCALERA", 3, 1],
+["Raffaele", "SCALESE", 3, 1],
+["Giulia", "SCALONE", 3, 1],
+["Francesco", "SCARPATI", 3, 1],
+["Niccolò", "SCHIA VONI", 3, 1],
+["Chiara", "SCHIPANI", 3, 1],
+["Francesco", "TAFUNI", 3, 1],
+["Filippo", "VACCARELLA", 3, 1],
+["Serena", "VACCARELLA", 3, 1],
+["Andrea", "VALENTE", 3, 1],
+["Federico", "VALENTINI", 3, 1],
+["Ester", "VALENZISI", 3, 1],
+["Isidora", "VALLETTA", 3, 1],
+["Beatrice", "VAZZOLER", 3, 1],
+["Mariateresa", "VELARDI", 3, 1],
+["Angelo", "VENDITTI", 3, 1],
+["Francesca", "VERDE", 3, 1],
+["Luciano Luca", "VERDE", 3, 1],
+["Raffaele", "VERDE", 3, 1],
+["Mario", "VERLOTTA", 3, 1],
+["Giusy", "VIGLIOTTI", 3, 1],
+["Giovanni Antonio", "VIRDIS", 3, 1],
+["Samuele", "VITALE", 3, 1],
+["Michele", "VITIELLO", 3, 1],
+["Sofia Martina", "VOCI", 3, 1],
+["Alessandro", "ZABONI", 3, 1],
+["Marta", "ZAMMUTO", 3, 1],
+["Nicola", "ZANGA", 3, 1],
+["Thomas", "ZANIOL", 3, 1],
+["Concetta", "ZARANO", 3, 1],
+["Giovanni", "ZERBINATO", 3, 1],
+["Maria Luisa", "ZINGARO", 3, 1],
+["Paolo", "ZITIELLO", 3, 1],
+["Alessandro", "ZOLLI", 3, 1],
+["Francesco", "ZUCCARINI", 3, 1],
+["Carmela", "CAPASSO", 3, 2],
+["Giada", "CARRIERO", 3, 2],
+["Giuseppe Maria", "LANDRISCINA", 3, 2],
+["Alessandro", "LANNA", 3, 2],
+["Giuseppe", "LAPOLLA", 3, 2],
+["Carlo", "LEGGIO", 3, 2],
+["Angelo Pio", "LICATA", 3, 2],
+["Alexandru Andrei", "PASNICIUC", 3, 2],
+["Luca", "PETRILLO", 3, 2],
+["Nicola", "PIRO", 3, 2],
+["Raffaele", "RUSSO", 3, 2],
+["Nicola", "SABARESE", 3, 2],
+["Giannicola", "SABELLA", 3, 2],
+["Michele", "SCIALPI", 3, 2],
+["Giovanni", "SCIVOLETTO", 3, 2],
+["Alessandro", "SCOGNAMIGLIO", 3, 2],
+["Claudia", "SCOPARO", 3, 2],
+["Domenico", "SCOTTO DI LUZIO", 3, 2],
+["Giustino", "SCURTI", 3, 2],
+["Gian Luca", "SEBASTIANI", 3, 2],
+["Edoardo", "SEGARELLI", 3, 2],
+["Alessandro", "SENATORE", 3, 2],
+["Patrizio", "SESSA", 3, 2],
+["Nicola", "SETTANNI", 3, 2],
+["Andrea", "SGRÒ", 3, 2],
+["Jessica", "SICILIA GELSOMINO", 3, 2],
+["Pietro", "SILVESTRO", 3, 2],
+["Federica", "SIMONCELLI", 3, 2],
+["Antonino", "SOFIA", 3, 2],
+["Paolo", "SPADONI", 3, 2],
+["Nicolò", "SPALLUTO", 3, 2],
+["Aniello", "SPAMPANATO", 3, 2],
+["Fabio", "SPARAGO", 3, 2],
+["Raimondo", "SPATARO", 3, 2],
+["Gianni", "SPERLONGANO", 3, 2],
+["Alessandro Flavio", "SPIMPOLO", 3, 2],
+["Melissa", "SPINA", 3, 2],
+["Luana", "STANISCIA", 3, 2],
+["Fabrizio", "FELLA", 3, 3],
+["Alessio", "SALTALAMACCHIA", 3, 3],
+["Gabriele", "SALV ATORE", 3, 3],
+["Giulia Regina", "SANCESARIO", 3, 3],
+["Philipp", "SANIN", 3, 3],
+["Beatrice", "SANNA", 3, 3],
+["Martina", "SANSONE", 3, 3],
+["Francesco Pio", "SANTOCONO", 3, 3],
+["Francesco", "SANTUCCI", 3, 3],
+["Simone", "SANTULLI", 3, 3],
+["Ivano", "SANZONE", 3, 3],
+["Daniele", "SCACCO", 3, 3],
+["Giovanna", "STILE", 3, 3],
+["Adrian", "STOICA", 3, 3],
+["Edward", "SULEJMANI", 3, 3],
+["Alfredo", "TABASCO", 3, 3],
+["Giulia", "TANDA", 3, 3],
+["Valerio", "TANTALO", 3, 3],
+["Clemente", "TARTAGLIA", 3, 3],
+["Ettore", "TERRANA", 3, 3],
+["Raffaele", "TESCHIO", 3, 3],
+["Flavio", "TIBURZI", 3, 3],
+["Erica", "TOGNI", 3, 3],
+["Elena", "TORNESI", 3, 3],
+["Federico", "TORNINCASA", 3, 3],
+["Francesco Savio", "TORRE", 3, 3],
+["Michele", "TORTORELLA", 3, 3],
+["Giulia", "TOZZI", 3, 3],
+["Raffaele", "TRAMICE", 3, 3],
+["Gabriele", "TROFI", 3, 3],
+["Giovanni", "TROIA", 3, 3],
+["Manuel", "TROPEA", 3, 3],
+["Adriana", "TUBOTTI", 3, 3],
+["Vincenzo", "TUCCILLO", 3, 3],
+["Michele", "TUFARIELLO", 3, 3],
+["Giuseppe", "TUOSTO", 3, 3],
+["Nicola", "TURI", 3, 3],
+["Angela", "TUZI", 3, 3]
+];
+function fasciaOf(pos){ return FASCE.find(f=>pos>=f.min&&pos<=f.max)||null; }
+function fasciaCorrente(){ const p=parseInt(document.getElementById('p_pos').value,10); return (p>=1)?fasciaOf(p):null; }
+function contaLivelli(){ const c={1:0,2:0,3:0,4:0,5:0}; PARTS.forEach(p=>p.qualita.forEach(q=>{ const l=state[q.id]; if(l) c[l]++; })); return c; }
+function updateCapBar(){
+  const bar=document.getElementById('capBar'); if(!bar) return;
+  const f=fasciaCorrente();
+  if(!f){ bar.style.display='none'; bar.innerHTML=''; return; }
+  const c=contaLivelli();
+  const overs=[];
+  const chips=[5,4,3,2,1].map(l=>{
+    const used=c[l], max=f.cap[l];
+    const cls = used>max?'over':(max>0&&used===max?'full':'');
+    if(used>max) overs.push(`${LIV_NOMI[l]} ${used}/${max}`);
+    return `<span class="capchip ${cls}">${LIV_NOMI[l]} <b>${used}/${max}</b></span>`;
+  }).join('');
+  const warn = overs.length
+    ? `<div class="capwarn">⚠ Oltre il tetto: ${overs.join(' · ')} — abbassa un'altra qualità per rientrare.</div>`
+    : '';
+  bar.innerHTML=`<div class="capinfo">Fascia <b>${f.min}–${f.max}</b> · ${f.macro}</div><div class="capchips">${chips}</div>${warn}`;
+  bar.style.display='block';
+}
+
+/* frasi-oggetto per il corpo caratteriale (indipendenti dal genere del soggetto) */
+const DESC = {
+  1:{5:"un portamento impeccabile",4:"un tratto distinto",3:"un aspetto decoroso",2:"un portamento non sempre curato",1:"un aspetto trascurato"},
+  2:{5:"notevole vigore fisico",4:"buona resistenza fisica",3:"adeguata forma fisica",2:"una forma fisica discontinua",1:"una forma fisica da migliorare"},
+  3:{5:"notevole tenuta mentale",4:"solida capacità di concentrazione",3:"adeguata concentrazione",2:"una concentrazione discontinua",1:"difficoltà di concentrazione"},
+  4:{5:"elevata correttezza e rettitudine",4:"sicura correttezza",3:"un comportamento corretto",2:"una condotta non sempre esemplare",1:"una condotta poco esemplare"},
+  5:{5:"ferma determinazione",4:"apprezzabile determinazione",3:"adeguata determinazione",2:"una determinazione da rafforzare",1:"scarsa determinazione"},
+  6:{5:"sicuro coraggio anche nel rischio",4:"provata fermezza nel rischio",3:"adeguata fermezza",2:"qualche incertezza nel rischio",1:"insicurezza nelle situazioni di rischio"},
+  7:{5:"cristallina lealtà",4:"schietta lealtà",3:"adeguata lealtà",2:"una trasparenza non sempre piena",1:"scarsa trasparenza"},
+  11:{5:"vasta cultura professionale",4:"viva propensione all'aggiornamento",3:"adeguato interesse all'aggiornamento",2:"un limitato interesse all'aggiornamento",1:"scarso interesse all'aggiornamento"},
+  13:{5:"spiccata professionalità",4:"buona preparazione professionale",3:"adeguata preparazione professionale",2:"una preparazione da consolidare",1:"una preparazione lacunosa"},
+  16:{5:"naturale propensione al lavoro di gruppo",4:"concreta attitudine al lavoro di gruppo",3:"discreta capacità di collaborazione",2:"una limitata propensione alla collaborazione",1:"scarsa attitudine al lavoro di gruppo"},
+  18:{5:"elevato senso del dovere e dedizione al servizio",4:"un convinto senso del dovere",3:"adeguata motivazione al servizio",2:"una motivazione da rafforzare",1:"scarsa motivazione al servizio"},
+  19:{5:"piena affidabilità",4:"sicura affidabilità",3:"adeguata affidabilità",2:"un'affidabilità da consolidare",1:"scarsa affidabilità"},
+  20:{5:"ottimo spirito di iniziativa",4:"un valido spirito di iniziativa",3:"un adeguato spirito di iniziativa",2:"un limitato spirito di iniziativa",1:"scarso spirito di iniziativa"},
+  23:{5:"assoluta riservatezza",4:"apprezzabile riservatezza",3:"adeguata riservatezza",2:"una riservatezza non sempre costante",1:"scarsa riservatezza"},
+  24:{5:"una salda disciplina",4:"una buona disciplina",3:"un adeguato senso della disciplina",2:"un senso della disciplina da consolidare",1:"un carente senso della disciplina"},
+};
+/* nome-tratto per i "margini di miglioramento" */
+const WEAK = {1:"cura del portamento",2:"forma fisica",3:"concentrazione",4:"esemplarità della condotta",5:"determinazione",6:"fermezza nel rischio",7:"trasparenza",11:"aggiornamento culturale",12:"impegno nelle lingue",13:"preparazione professionale",16:"collaborazione",18:"dedizione al servizio",19:"affidabilità",20:"iniziativa personale",23:"riservatezza",24:"disciplina"};
+
+/* aggettivi (maschile) per una prosa più sciolta */
+const ADJ = {1:"curato",2:"energico",3:"concentrato",4:"corretto",5:"determinato",6:"sicuro",7:"leale",11:"attento",13:"preparato",16:"collaborativo",18:"motivato",19:"affidabile",20:"intraprendente",23:"riservato",24:"disciplinato"};
+
+/* connettori variabili (scelti in modo deterministico dai dati, così restano stabili per lo stesso allievo) */
+const LEAD_C=["ha dato prova di","ha fatto registrare","ha costantemente mostrato"];
+const PART_C=["evidenziando altresì","mostrando inoltre","unendo a ciò"];
+const WEAK_C=["Deve ancora consolidarsi quanto a","Presenta margini di crescita quanto a","Mostra ancora margini di miglioramento in termini di"];
+const LEAD_R=["ha saputo esprimere","ha manifestato","ha confermato"];
+const PART_R=["rivelandosi","dimostrandosi","apparendo"];
+const WEAK_R=["Presenta ancora qualche margine di crescita quanto a","Restano aspetti da affinare, in particolare quanto a","Deve ancora consolidarsi quanto a"];
+
+function seedOf(d){ return ([d.nome,d.cognome].join('').length)+d.scores.length+Math.round(d.avg*100)+d.incarichi.length+variant*17; }
+
+/* --- varianti frasali (per «Ricomponi»: stesso senso, parole diverse) --- */
+const QC_C={o:["ottime","eccellenti","pregevoli"],pb:["più che buone","spiccate"],b:["buone","valide"],s:["soddisfacenti","apprezzabili"],su:["sufficienti","accettabili"],mo:["modeste","appena sufficienti","limitate"],in:["carenti","insufficienti","lacunose"]};
+const QC_R={o:["eccellenti","pregevoli"],pb:["spiccate","notevoli"],b:["valide","solide"],s:["apprezzabili","adeguate"],su:["sufficienti","essenziali"],mo:["modeste","limitate"],in:["carenti","insufficienti"]};
+function qcBand(avg,tab){ return avg>=4.5?tab.o: avg>=4?tab.pb: avg>=3.5?tab.b: avg>=3?tab.s: avg>=2.5?tab.su: avg>=2?tab.mo:tab.in; }
+const OPEN_C=[
+  (g,n,q)=>`Il ${g} ${n} è un militare dotato di ${q} qualità complessive.`,
+  (g,n,q)=>`Il ${g} ${n} si conferma un militare in possesso di ${q} qualità complessive.`,
+  (g,n,q)=>`Il ${g} ${n} ha evidenziato ${q} qualità complessive.`,
+];
+const OPEN_C_NEG=[
+  (g,n,q)=>`Il ${g} ${n} ha evidenziato ${q} qualità complessive.`,
+  (g,n,q)=>`Il ${g} ${n} presenta ${q} qualità complessive.`,
+  (g,n,q)=>`Nel periodo considerato il ${g} ${n} ha mostrato ${q} qualità complessive.`,
+];
+const OPEN_R=[
+  (g,n,q)=>`Il ${g} ${n} ha dato prova di ${q} doti complessive.`,
+  (g,n,q)=>`Il ${g} ${n} si è rivelato un elemento di ${q} doti complessive.`,
+  (g,n,q)=>`Nel periodo considerato il ${g} ${n} ha mostrato ${q} doti generali.`,
+];
+const OPEN_R_NEG=[
+  (g,n,q)=>`Il ${g} ${n} ha mostrato ${q} doti complessive.`,
+  (g,n,q)=>`Il ${g} ${n} presenta ${q} doti complessive.`,
+  (g,n,q)=>`Nel periodo considerato il ${g} ${n} ha evidenziato ${q} doti generali.`,
+];
+const CLOSE_C=[
+  v=>`Nel complesso, la valutazione è da considerarsi ${v}.`,
+  v=>`In definitiva, la valutazione può ritenersi ${v}.`,
+  v=>`Complessivamente, si esprime una valutazione ${v}.`,
+];
+const CLOSE_R=[
+  v=>`La valutazione conclusiva è da ritenersi ${v}.`,
+  v=>`Se ne ricava, in conclusione, una valutazione ${v}.`,
+  v=>`In sintesi, la valutazione risulta ${v}.`,
+];
+const PROF_C=["Ha conseguito","Sul piano didattico ha conseguito","Quanto al profitto, ha ottenuto"];
+const PROF_R=["Sul piano didattico ha riportato","Quanto al rendimento didattico, ha ottenuto","Negli studi ha conseguito"];
+const EXTRA_C=[
+  e=>`Si riconosce, inoltre, il fattivo contributo assicurato nelle attività di ${e}.`,
+  e=>`Va inoltre segnalato il valido apporto fornito nelle attività di ${e}.`,
+];
+const EXTRA_R=[
+  e=>`Apprezzabile il contributo offerto nelle attività di ${e}.`,
+  e=>`Degno di nota anche l'apporto assicurato nelle attività di ${e}.`,
+];
+const INCLEAD_C=["Ha svolto","Si è disimpegnato"];
+const INCLEAD_R=["Si è distinto","Ha dato buona prova di sé","Si è ben disimpegnato"];
+function incFraseC(d,s){
+  const b=pickDet(INCLEAD_C,s)==="Si è disimpegnato";
+  if(d.incarichi.length===1){
+    const it=d.incarichi[0];
+    return b?`Nell'incarico di ${it.role} si è disimpegnato ${COME[it.come]}.`:`Ha svolto l'incarico di ${it.role} ${COME[it.come]}.`;
+  }
+  if(b){
+    const p=d.incarichi.map((it,i)=>`${i===0?"nell'incarico di":"in quello di"} ${it.role} ${COME[it.come]}`);
+    return `Si è disimpegnato ${elenco(p)}.`;
+  }
+  const p=d.incarichi.map((it,i)=>`${i===0?"l'incarico di":"quello di"} ${it.role} ${COME[it.come]}`);
+  return `Ha svolto ${elenco(p)}.`;
+}
+function incFraseR(d,s){
+  const p=d.incarichi.map((it,i)=>`${i===0?"nell'incarico di":"in quello di"} ${it.role} ${COME2[it.come]}`);
+  return `${pickDet(INCLEAD_R,s)} ${elenco(p)}.`;
+}
+function profFrase(d,leadPool,s){
+  const g=GRADES, acc=[];
+  if(d.prof.univ) acc.push(`un ${g[d.prof.univ].u} profitto nelle materie universitarie`);
+  if(d.prof.tec)  acc.push(`${g[d.prof.tec].p} risultati nelle discipline tecnico-professionali`);
+  if(d.prof.gin)  acc.push(`un ${g[d.prof.gin].u} rendimento nelle attività ginnico-sportive`);
+  return acc.length?`${pickDet(leadPool,s)} ${elenco(acc)}.`:'';
+}
+function pickDet(pool,s){ return pool[((s%pool.length)+pool.length)%pool.length]; }
+function ee(w){ return /^[eE]/.test(w||'')?'ed':'e'; }
+function coppia(a){ return a.length>=2?`${a[0]} ${ee(a[1])} ${a[1]}`:a[0]; }
+function joinDesc(a){ if(a.length<2) return a[0]; return a.some(x=>/ ed? /.test(x)) ? `${a[0]}, ${a[1]}` : `${a[0]} ${ee(a[1])} ${a[1]}`; }
+
+/* corpo caratteriale del compilatore: apposizione di aggettivi + verbo + participio */
+function corpoCompilatore(d){
+  const out=[]; const s=seedOf(d);
+  const forti=d.rated.filter(r=>r.level>=4).sort((a,b)=>b.level-a.level);
+  const deboli=d.rated.filter(r=>r.level<=2).sort((a,b)=>a.level-b.level).slice(0,3);
+  const neutri=d.rated.some(r=>r.level===3);
+  const hasPos=forti.length>0;
+  if(hasPos){
+    const adjIds=[], descIds=[];
+    forti.forEach(r=>{ if(adjIds.length<2 && ADJ[r.id]) adjIds.push(r); else descIds.push(r); });
+    const adjW=adjIds.map(r=>ADJ[r.id]);
+    const descP=descIds.slice(0,2).map(r=>DESC[r.id][r.level]);
+    const extraP=descIds.slice(2,3).map(r=>DESC[r.id][r.level]);
+    if(descP.length){
+      let sent = adjW.length?cap(coppia(adjW))+', ':'';
+      const lead = sent?pickDet(LEAD_C,s):cap(pickDet(LEAD_C,s));
+      sent += `${lead} ${joinDesc(descP)}`;
+      if(extraP.length) sent += `, ${pickDet(PART_C,s)} ${extraP[0]}`;
+      out.push(sent+'.');
+    }else if(adjW.length){
+      out.push(`Si è dimostrato ${coppia(adjW)}.`);
+    }
+  }else if(neutri){
+    out.push('Ha tenuto una condotta nel complesso corretta e adeguata.');
+  }
+  if(deboli.length){
+    const neg=deboli.map(r=>DESC[r.id][r.level]);
+    const contrast=hasPos||neutri;
+    const lead=contrast?pickDet(["Evidenzia tuttavia","Presenta però","Mostra tuttavia"],s):pickDet(["Evidenzia","Presenta","Denota"],s);
+    out.push(`${lead} ${elenco(neg)}.`);
+  }
+  return out;
+}
+
+/* corpo caratteriale del revisore: verbo diverso + participio con aggettivi */
+function corpoRevisore(d){
+  const out=[]; const s=seedOf(d)+3;
+  const forti=d.rated.filter(r=>r.level>=4).sort((a,b)=>b.level-a.level);
+  const deboli=d.rated.filter(r=>r.level<=2).sort((a,b)=>a.level-b.level).slice(0,3);
+  const neutri=d.rated.some(r=>r.level===3);
+  if(forti.length){
+    const descIds=[], adjIds=[];
+    forti.forEach(r=>{ if(descIds.length<2) descIds.push(r); else if(adjIds.length<2 && ADJ[r.id]) adjIds.push(r); });
+    const descP=descIds.map(r=>DESC[r.id][r.level]);
+    const adjW=adjIds.map(r=>ADJ[r.id]);
+    let sent=`${cap(pickDet(LEAD_R,s))} ${joinDesc(descP)}`;
+    if(adjW.length) sent += `, ${pickDet(PART_R,s)} ${coppia(adjW)}`;
+    out.push(sent+'.');
+  }else if(neutri){
+    out.push('Ha tenuto un comportamento corretto e conforme alle aspettative.');
+  }
+  if(deboli.length) out.push(`${pickDet(WEAK_R,s)} ${elenco(deboli.map(r=>WEAK[r.id]))}.`);
+  return out;
+}
+
+const INCARICHI = ["Capo Compagnia","Capo Plotone","Vice Capo Plotone","Capo Squadra","Capo Aula","Vice Capo Aula","Memorialista","Referente Logistica"];
+const EXTRA = ["supporto alle esercitazioni di Tiro del Plotone","assistenza nella gestione dell'armeria di Compagnia"];
+const COME = {
+  ottimo:"con ottimo impegno e scrupolosità",
+  buono:"con impegno e correttezza",
+  adeguato:"con adeguato impegno",
+  giusto:"con il giusto impegno",
+  accettabile:"con impegno accettabile",
+};
+const COME_LABEL = {
+  ottimo:"Con ottimo impegno e scrupolosità",
+  buono:"Con impegno e correttezza",
+  adeguato:"Con adeguato impegno",
+  giusto:"Con il giusto impegno",
+  accettabile:"Con impegno accettabile",
+};
+const COME2 = {
+  ottimo:"con eccellente impegno e piena diligenza",
+  buono:"con serietà e correttezza",
+  adeguato:"con adeguato senso di responsabilità",
+  giusto:"con costante impegno",
+  accettabile:"con un impegno nel complesso accettabile",
+};
+/* scala profitto con forme singolare/plurale */
+const GRADES = [
+  {label:"—",u:"",p:""},
+  {label:"Insufficiente",u:"insufficiente",p:"insufficienti"},
+  {label:"Appena sufficiente",u:"appena sufficiente",p:"appena sufficienti"},
+  {label:"Sufficiente",u:"sufficiente",p:"sufficienti"},
+  {label:"Adeguato",u:"adeguato",p:"adeguati"},
+  {label:"Soddisfacente",u:"soddisfacente",p:"soddisfacenti"},
+  {label:"Più che soddisfacente",u:"più che soddisfacente",p:"più che soddisfacenti"},
+  {label:"Buono",u:"buon",p:"buoni"},
+  {label:"Più che buono",u:"più che buon",p:"più che buoni"},
+  {label:"Molto buono",u:"molto buon",p:"molto buoni"},
+  {label:"Ottimo",u:"ottimo",p:"ottimi"},
+  {label:"Brillante",u:"brillante",p:"brillanti"},
+];
+const VALFIN = ["insufficiente","appena sufficiente","sufficiente","soddisfacente","positiva","più che positiva","buona","più che buona","molto positiva"];
+
+const state = {};
+let valTouched=false, lastMode='', variant=0;
+
+/* ===================== COSTRUZIONE UI ===================== */
+const form=document.getElementById('form');
+PARTS.forEach(part=>{
+  const box=document.createElement('section'); box.className='part';
+  box.innerHTML=`<h2><span class="num">${part.num}</span>${part.titolo}</h2><p class="sub">Seleziona la definizione per ciascuna voce.</p>`;
+  part.qualita.forEach(q=>{
+    const card=document.createElement('div'); card.className='q';
+    let opts='';
+    for(let l=1;l<=5;l++){
+      const nm=`q_${q.id}`;
+      opts+=`<div class="opt" data-l="${l}"><input type="radio" id="${nm}_${l}" name="${nm}" value="${l}">
+        <label for="${nm}_${l}"><span class="lvl">${l}</span><span>${q.liv[l-1]}</span></label></div>`;
+    }
+    card.innerHTML=`<div class="q-head"><span class="q-idx">${q.id}</span><span class="q-name">${q.nome}</span></div><div class="scale">${opts}</div>`;
+    box.appendChild(card);
+  });
+  form.appendChild(box);
+});
+// incarichi: righe dinamiche (max 5)
+const incRows=document.getElementById('incRows');
+const MAX_INC=5;
+function roleOptions(sel){ return `<option value="">— seleziona incarico —</option>`+INCARICHI.map(r=>`<option${r===sel?' selected':''}>${r}</option>`).join(''); }
+function comeOptions(sel){ return Object.keys(COME_LABEL).map(k=>`<option value="${k}"${k===sel?' selected':''}>${COME_LABEL[k]}</option>`).join(''); }
+function addIncRow(role='',come='adeguato'){
+  if(incRows.children.length>=MAX_INC) return;
+  const div=document.createElement('div'); div.className='incrow';
+  div.innerHTML=`<select class="incRole">${roleOptions(role)}</select><select class="incCome">${comeOptions(come)}</select><button type="button" class="incDel" title="Rimuovi">✕</button>`;
+  incRows.appendChild(div); updateAddBtn();
+}
+function updateAddBtn(){ document.getElementById('addInc').disabled = incRows.children.length>=MAX_INC; }
+addIncRow(); // prima riga
+// extra chips
+const exBox=document.getElementById('extra');
+EXTRA.forEach((r,i)=>{ exBox.insertAdjacentHTML('beforeend',
+  `<span class="chip"><input type="checkbox" id="ex_${i}" value="${r}"><label for="ex_${i}">${r.charAt(0).toUpperCase()+r.slice(1)}</label></span>`); });
+// grade selects
+['p_univ','p_tec','p_gin'].forEach(id=>{
+  const s=document.getElementById(id);
+  GRADES.forEach((g,i)=>s.insertAdjacentHTML('beforeend',`<option value="${i}">${g.label}</option>`));
+});
+// valutazione finale
+const valSel=document.getElementById('p_val');
+valSel.insertAdjacentHTML('beforeend',`<option value="-1">— automatica</option>`);
+VALFIN.forEach((v,i)=>valSel.insertAdjacentHTML('beforeend',`<option value="${i}">${v.charAt(0).toUpperCase()+v.slice(1)}</option>`));
+
+/* ===================== HELPER ===================== */
+function elenco(a){ if(!a.length)return''; if(a.length===1)return a[0]; if(a.length===2)return a[0]+' '+ee(a[1])+' '+a[1]; return a.slice(0,-1).join(', ')+' '+ee(a[a.length-1])+' '+a[a.length-1]; }
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function raccogli(){
+  const grado=document.getElementById('m_grado').value;
+  const nome=document.getElementById('m_nome').value.trim();
+  const cognome=document.getElementById('m_cognome').value.trim();
+  const rated=[];
+  PARTS.forEach(p=>p.qualita.forEach(q=>{ if(state[q.id]) rated.push({id:q.id,nome:q.nome,level:state[q.id],def:q.liv[state[q.id]-1]}); }));
+  const scores=rated.map(r=>r.level);
+  const avg=scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:0;
+  const idx=scores.length?Math.min(4,Math.max(0,Math.round(avg)-1)):-1;
+  const incarichi=[...document.querySelectorAll('#incRows .incrow')].map(row=>({
+    role:row.querySelector('.incRole').value,
+    come:row.querySelector('.incCome').value
+  })).filter(x=>x.role);
+  const extra=[...document.querySelectorAll('#extra input:checked')].map(c=>c.value);
+  const gi=id=>parseInt(document.getElementById(id).value||"0",10);
+  const prof={univ:gi('p_univ'),tec:gi('p_tec'),gin:gi('p_gin')};
+  const pos=document.getElementById('p_pos').value.trim();
+  const fascia = pos ? fasciaOf(parseInt(pos,10)) : null;
+  let valIdx=parseInt(document.getElementById('p_val').value,10);
+  if(valIdx<0 && scores.length){
+    valIdx = (fascia && MACRO_VAL[fascia.macro]!=null)
+      ? MACRO_VAL[fascia.macro]                                        // chiusura dalla macro-fascia della posizione
+      : (avg>=4.5?8: avg>=4?7: avg>=3.5?6: avg>=3?3: avg>=2.5?2: avg>=2?1:0); // fallback sulla media
+  }
+  return {grado,nome,cognome,rated,scores,avg,idx,incarichi,extra,prof,pos,fascia,valIdx};
+}
+
+/* ===================== SINTESI LOCALE (stile compilatore) ===================== */
+function sintesiCompilatore(d){
+  const S=[]; const s=seedOf(d);
+  const nomcog = [d.nome,d.cognome].filter(Boolean).join(' ');
+  const qc = pickDet(qcBand(d.avg,QC_C), s);
+
+  // 1) apertura (sempre al maschile; frase adeguata alla fascia)
+  if(nomcog) S.push(pickDet(d.avg>=2.5?OPEN_C:OPEN_C_NEG,s)(d.grado,nomcog,qc));
+  else S.push(`Militare che ha evidenziato ${qc} qualità complessive.`);
+
+  // 2) corpo caratteriale (prosa sciolta)
+  corpoCompilatore(d).forEach(x=>S.push(x));
+
+  // 3) incarichi (ciascuno con la propria valutazione)
+  if(d.incarichi.length) S.push(incFraseC(d,s));
+
+  // 4) attività di supporto
+  if(d.extra.length) S.push(pickDet(EXTRA_C,s)(elenco(d.extra)));
+
+  // 5) profitto
+  const pf=profFrase(d,PROF_C,s); if(pf) S.push(pf);
+
+  // 6) chiusura
+  if(d.valIdx>=0) S.push(pickDet(CLOSE_C,s)(VALFIN[d.valIdx]));
+
+  return S.join(' ');
+}
+
+/* ===================== SINTESI 1º REVISORE (giudizio autonomo, parole diverse) ===================== */
+function sintesiRevisore(d){
+  const R=[]; const s=seedOf(d)+5;
+  const nomcog=[d.nome,d.cognome].filter(Boolean).join(' ');
+  const qc2 = pickDet(qcBand(d.avg,QC_R), s);
+
+  // apertura autonoma (parole diverse dal compilatore)
+  R.push(nomcog?pickDet(d.avg>=2.5?OPEN_R:OPEN_R_NEG,s)(d.grado,nomcog,qc2):`Militare che ha mostrato ${qc2} doti complessive.`);
+
+  corpoRevisore(d).forEach(x=>R.push(x));
+
+  if(d.incarichi.length) R.push(incFraseR(d,s));
+  if(d.extra.length) R.push(pickDet(EXTRA_R,s)(elenco(d.extra)));
+
+  const pf=profFrase(d,PROF_R,s); if(pf) R.push(pf);
+
+  if(d.valIdx>=0) R.push(pickDet(CLOSE_R,s)(VALFIN[d.valIdx]));
+  return R.join(' ');
+}
+
+/* ===================== AGGIORNA ===================== */
+function build(){
+  updateCapBar();
+  const d=raccogli();
+  const badge=document.getElementById('overallBadge'), synth=document.getElementById('synthesis');
+  const ta=document.getElementById('giudizio'), taR=document.getElementById('giudizioRev');
+  if(!d.scores.length && !d.incarichi.length && !(d.prof.univ||d.prof.tec||d.prof.gin)){
+    badge.textContent='—'; badge.style.background='rgba(255,255,255,.16)'; synth.textContent=''; ta.value=''; taR.value=''; lastMode=''; return;
+  }
+  if(d.scores.length){
+    badge.textContent=OVERALL[d.idx];
+    badge.style.background=d.idx>=3?'rgba(60,180,110,.28)':(d.idx<=1?'rgba(220,120,100,.30)':'rgba(255,255,255,.16)');
+    synth.innerHTML=`Qualità compilate: <b>${d.scores.length}/${TOTQ}</b> · Media: <b>${d.avg.toFixed(2)}</b>/5 · Sintetico: <b>${OVERALL[d.idx]}</b>`;
+  }else{ badge.textContent='—'; synth.textContent=''; }
+  if(lastMode!=='ai'){ ta.value=sintesiCompilatore(d); taR.value=sintesiRevisore(d); lastMode='local'; }
+}
+
+/* ===================== REGISTRO EXCEL (autonomo, offline) ===================== */
+const REG_KEY='giudizi_registro_v1';
+let regMem=[];
+function regLoad(){
+  try{ const s=localStorage.getItem(REG_KEY); regMem = s?JSON.parse(s):[]; }
+  catch(e){ /* sandbox: resta in memoria */ }
+  return regMem;
+}
+function regSave(){
+  try{ localStorage.setItem(REG_KEY, JSON.stringify(regMem)); }catch(e){}
+}
+function regCountUpdate(){
+  const el=document.getElementById('regCount');
+  if(!regMem.length){ el.textContent='Registro vuoto.'; return; }
+  const nomi=regMem.slice(-4).map(r=>`${r.cognome} ${r.nome}`.trim()).join(', ');
+  el.textContent=`${regMem.length} allievo/i nel registro${nomi?': …'+nomi:''}.`;
+}
+function regAdd(){
+  const btn=document.getElementById('btnAddReg');
+  const nome=document.getElementById('m_nome').value.trim();
+  const cognome=document.getElementById('m_cognome').value.trim();
+  const grado=document.getElementById('m_grado').value;
+  const comp=document.getElementById('giudizio').value.trim();
+  const rev=document.getElementById('giudizioRev').value.trim();
+  if(!nome||!cognome){ const t=btn.textContent; btn.textContent='Inserisci nome e cognome'; setTimeout(()=>btn.textContent=t,2000); return; }
+  const key=(nome+'|'+cognome).toLowerCase();
+  const pos=document.getElementById('p_pos').value.trim();
+  const fascia=pos?fasciaOf(parseInt(pos,10)):null;
+  const rec={grado,nome,cognome,pos,macro:fascia?fascia.macro:'',comp,rev,liv:Object.assign({},state),data:new Date().toLocaleDateString('it-IT')};
+  const i=regMem.findIndex(r=>((r.nome+'|'+r.cognome).toLowerCase()===key));
+  if(i>=0) regMem[i]=rec; else regMem.push(rec);
+  regSave(); regCountUpdate();
+  const t=btn.textContent; btn.textContent = i>=0?'Aggiornato ✓':'Aggiunto ✓'; setTimeout(()=>btn.textContent=t,1500);
+}
+function regClear(){
+  if(!regMem.length) return;
+  if(!confirm('Svuotare il registro? L\'operazione non è reversibile.')) return;
+  regMem=[]; regSave(); regCountUpdate();
+}
+
+/* --- mini scrittore XLSX (ZIP store + CRC32, senza librerie) --- */
+function _u16(a,v){a.push(v&255,(v>>>8)&255);}
+function _u32(a,v){a.push(v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255);}
+const _CRCT=(function(){const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
+function _crc32(bytes){let c=0xFFFFFFFF;for(let i=0;i<bytes.length;i++)c=_CRCT[(c^bytes[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function _xmlEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[m])).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'');}
+function _te(str){return new TextEncoder().encode(str);}
+function _colLetter(n){let s='';n++;while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26);}return s;}
+
+function buildXlsx(rows, opts){
+  // rows: array di array di stringhe (prima riga = intestazioni)
+  opts=opts||{}; const wrap=new Set(opts.wrapCols||[]); const widths=opts.widths||[];
+  const CT=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`;
+  const RELS=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+  const WB=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Giudizi" sheetId="1" r:id="rId1"/></sheets></workbook>`;
+  const WBR=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+  const STY=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="1"><fill><patternFill patternType="none"/></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+  let sd='';
+  rows.forEach((row,ri)=>{
+    sd+=`<row r="${ri+1}">`;
+    row.forEach((val,ci)=>{
+      const ref=_colLetter(ci)+(ri+1);
+      const s = ri===0?1:(wrap.has(ci)?2:0); // intestazioni in grassetto, colonne indicate con a-capo
+      sd+=`<c r="${ref}" s="${s}" t="inlineStr"><is><t xml:space="preserve">${_xmlEsc(val)}</t></is></c>`;
+    });
+    sd+=`</row>`;
+  });
+  const ncol=rows[0]?rows[0].length:0;
+  let colsXml='';
+  for(let c=0;c<ncol;c++){ colsXml+=`<col min="${c+1}" max="${c+1}" width="${widths[c]||12}"/>`; }
+  const SHEET=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>${colsXml}</cols><sheetData>${sd}</sheetData></worksheet>`;
+
+  const files=[
+    {name:'[Content_Types].xml',data:_te(CT)},
+    {name:'_rels/.rels',data:_te(RELS)},
+    {name:'xl/workbook.xml',data:_te(WB)},
+    {name:'xl/_rels/workbook.xml.rels',data:_te(WBR)},
+    {name:'xl/styles.xml',data:_te(STY)},
+    {name:'xl/worksheets/sheet1.xml',data:_te(SHEET)},
+  ];
+  const out=[]; const central=[]; let offset=0;
+  files.forEach(f=>{
+    const nameB=_te(f.name); const crc=_crc32(f.data); const sz=f.data.length;
+    const local=[];
+    _u32(local,0x04034b50); _u16(local,20); _u16(local,0x0800); _u16(local,0); _u16(local,0); _u16(local,0x21);
+    _u32(local,crc); _u32(local,sz); _u32(local,sz); _u16(local,nameB.length); _u16(local,0);
+    for(const b of nameB) local.push(b);
+    const headerLen=local.length;
+    for(const b of f.data) local.push(b);
+    for(const b of local) out.push(b);
+    const cd=[];
+    _u32(cd,0x02014b50); _u16(cd,20); _u16(cd,20); _u16(cd,0x0800); _u16(cd,0); _u16(cd,0); _u16(cd,0x21);
+    _u32(cd,crc); _u32(cd,sz); _u32(cd,sz); _u16(cd,nameB.length); _u16(cd,0); _u16(cd,0); _u16(cd,0); _u16(cd,0); _u32(cd,0); _u32(cd,offset);
+    for(const b of nameB) cd.push(b);
+    central.push(cd);
+    offset += headerLen + sz;
+  });
+  const cdStart=offset; let cdLen=0;
+  central.forEach(cd=>{ for(const b of cd) out.push(b); cdLen+=cd.length; });
+  const eocd=[]; _u32(eocd,0x06054b50); _u16(eocd,0); _u16(eocd,0); _u16(eocd,files.length); _u16(eocd,files.length); _u32(eocd,cdLen); _u32(eocd,cdStart); _u16(eocd,0);
+  for(const b of eocd) out.push(b);
+  return new Blob([new Uint8Array(out)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+function regDownload(){
+  const btn=document.getElementById('btnXlsx');
+  if(!regMem.length){ const t=btn.textContent; btn.textContent='Registro vuoto'; setTimeout(()=>btn.textContent=t,1800); return; }
+  const QCOLS=[]; PARTS.forEach(p=>p.qualita.forEach(q=>QCOLS.push(q)));
+  const header=['Grado','Nome','Cognome','Posizione','Fascia',...QCOLS.map(q=>`${q.id}. ${q.nome}`),'Giudizio del compilatore','Giudizio del 1º revisore','Data'];
+  const rows=[header];
+  regMem.forEach(r=>{
+    const liv=QCOLS.map(q=>(r.liv&&r.liv[q.id])?String(r.liv[q.id]):'');
+    rows.push([r.grado||'',r.nome,r.cognome,r.pos||'',r.macro||'',...liv,r.comp,r.rev,r.data||'']);
+  });
+  const compIdx=5+QCOLS.length, revIdx=compIdx+1, dataIdx=revIdx+1;
+  const widths=[30,14,16,10,20]; for(let i=0;i<QCOLS.length;i++) widths.push(6); widths[compIdx]=70; widths[revIdx]=70; widths[dataIdx]=14;
+  const blob=buildXlsx(rows,{wrapCols:[compIdx,revIdx],widths});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='Giudizi_allievi.xlsx'; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url); a.remove();},1000);
+}
+
+/* ===================== EVENTI ===================== */
+form.addEventListener('change',e=>{
+  if(e.target.name&&e.target.name.startsWith('q_')){
+    // modifica sempre permessa; i tetti sforati si evidenziano in rosso (vedi updateCapBar)
+    state[parseInt(e.target.name.slice(2),10)]=parseInt(e.target.value,10);
+    lastMode=''; build();
+  }
+});
+['m_grado','m_nome','m_cognome','p_univ','p_tec','p_gin','p_pos'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',()=>{lastMode='';build();});
+  document.getElementById(id).addEventListener('change',()=>{lastMode='';build();});
+});
+document.getElementById('p_val').addEventListener('change',()=>{valTouched=true;lastMode='';build();});
+document.querySelectorAll('#extra input').forEach(c=>c.addEventListener('change',()=>{lastMode='';build();}));
+// righe incarico: delega eventi
+document.getElementById('addInc').addEventListener('click',()=>{addIncRow();lastMode='';build();});
+incRows.addEventListener('change',()=>{lastMode='';build();});
+incRows.addEventListener('click',e=>{
+  if(e.target.classList.contains('incDel')){
+    e.target.closest('.incrow').remove();
+    if(!incRows.children.length) addIncRow();
+    updateAddBtn(); lastMode=''; build();
+  }
+});
+
+document.getElementById('btnTutti3').addEventListener('click',()=>{
+  document.querySelectorAll('input[type=radio][value="3"]').forEach(r=>r.checked=true);
+  PARTS.forEach(p=>p.qualita.forEach(q=>state[q.id]=3)); lastMode=''; build();
+});
+document.getElementById('btnReset').addEventListener('click',()=>{
+  document.querySelectorAll('input[type=radio],#extra input').forEach(r=>r.checked=false);
+  for(const k in state) delete state[k];
+  incRows.innerHTML=''; addIncRow();
+  ['p_univ','p_tec','p_gin'].forEach(id=>document.getElementById(id).value="0");
+  document.getElementById('p_val').value="-1";
+  document.getElementById('p_pos').value="";
+  document.getElementById('giudizio').value=''; lastMode=''; valTouched=false; variant=0; build();
+});
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function compilaDaPosizione(){
+  const btn=document.getElementById('btnFromRank');
+  const flash=(msg)=>{ const t=btn.textContent; btn.textContent=msg; setTimeout(()=>btn.textContent=t,2400); };
+  const pos=parseInt(document.getElementById('p_pos').value,10);
+  if(!pos||pos<1){ flash('Inserisci prima la posizione (1–656)'); return; }
+  const f=fasciaOf(pos);
+  if(!f){ flash('Posizione fuori intervallo (1–656)'); return; }
+  // elenco livelli secondo i tetti della fascia (somma = 15), assegnati a caso alle qualità
+  const pool=[];
+  [5,4,3,2,1].forEach(l=>{ for(let i=0;i<f.cap[l];i++) pool.push(l); });
+  shuffle(pool);
+  const ids=[]; PARTS.forEach(p=>p.qualita.forEach(q=>ids.push(q.id)));
+  ids.forEach((id,i)=>{
+    const lvl=pool[i]||3;
+    state[id]=lvl;
+    const r=document.getElementById(`q_${id}_${lvl}`);
+    if(r) r.checked=true;
+  });
+  lastMode=''; build();
+}
+document.getElementById('btnFromRank').addEventListener('click',compilaDaPosizione);
+function riequilibra(){
+  const btn=document.getElementById('btnRiequilibra');
+  const f=fasciaCorrente();
+  if(!f){ const t=btn.textContent; btn.textContent='Serve prima una posizione'; setTimeout(()=>btn.textContent=t,2000); return; }
+  const pool=[]; [5,4,3,2,1].forEach(l=>{ for(let i=0;i<f.cap[l];i++) pool.push(l); });
+  const ids=[]; PARTS.forEach(p=>p.qualita.forEach(q=>ids.push(q.id)));
+  // 1) conserva i livelli attuali ancora ammessi dai tetti (minima perturbazione)
+  const assigned={};
+  ids.forEach(id=>{ const l=state[id]; const k=l?pool.indexOf(l):-1; if(k>=0){ assigned[id]=l; pool.splice(k,1); } });
+  // 2) distribuisci a caso i livelli rimasti sulle qualità non ancora assegnate
+  const resto=ids.filter(id=>!(id in assigned)); shuffle(pool);
+  resto.forEach((id,i)=>{ assigned[id]=pool[i]||3; });
+  ids.forEach(id=>{ state[id]=assigned[id]; const r=document.getElementById(`q_${id}_${assigned[id]}`); if(r) r.checked=true; });
+  lastMode=''; build();
+}
+document.getElementById('btnRiequilibra').addEventListener('click',riequilibra);
+
+/* selezione allievo a cascata Plotone → Squadra → Allievo → auto-compila grado/nome/cognome */
+(function initRoster(){
+  const selP=document.getElementById('s_plotone'), selS=document.getElementById('s_squadra'), selA=document.getElementById('s_allievo');
+  if(!selP||!ROSTER.length) return;
+  [...new Set(ROSTER.map(m=>m[2]))].sort((a,b)=>a-b)
+    .forEach(p=>selP.insertAdjacentHTML('beforeend',`<option value="${p}">Plotone ${p}</option>`));
+  function fillSquadre(){
+    selS.innerHTML='<option value="">Squadra…</option>'; selA.innerHTML='<option value="">Allievo…</option>';
+    const p=+selP.value; if(!p) return;
+    [...new Set(ROSTER.filter(m=>m[2]===p).map(m=>m[3]))].sort((a,b)=>a-b)
+      .forEach(s=>selS.insertAdjacentHTML('beforeend',`<option value="${s}">Squadra ${s}</option>`));
+  }
+  function fillAllievi(){
+    selA.innerHTML='<option value="">Allievo…</option>';
+    const p=+selP.value, s=+selS.value; if(!p||!s) return;
+    ROSTER.map((m,i)=>[m,i]).filter(([m])=>m[2]===p&&m[3]===s)
+      .sort((a,b)=>(a[0][1]+a[0][0]).localeCompare(b[0][1]+b[0][0]))
+      .forEach(([m,i])=>selA.insertAdjacentHTML('beforeend',`<option value="${i}">${m[1]} ${m[0]}</option>`));
+  }
+  function pickAllievo(){
+    if(selA.value==='') return;
+    const m=ROSTER[+selA.value];
+    document.getElementById('m_grado').value='Carabiniere Allievo Maresciallo';
+    document.getElementById('m_nome').value=m[0];
+    document.getElementById('m_cognome').value=m[1];
+    lastMode=''; build();
+  }
+  selP.addEventListener('change',fillSquadre);
+  selS.addEventListener('change',fillAllievi);
+  selA.addEventListener('change',pickAllievo);
+})();
+document.getElementById('btnCopyBoth').addEventListener('click',()=>{
+  const btn=document.getElementById('btnCopyBoth'), t=btn.textContent;
+  const comp=document.getElementById('giudizio').value.trim();
+  const rev=document.getElementById('giudizioRev').value.trim();
+  if(!comp && !rev){ btn.textContent='Niente da copiare'; setTimeout(()=>btn.textContent=t,1500); return; }
+  const testo=`GIUDIZIO DEL COMPILATORE\n${comp}\n\nGIUDIZIO DEL 1º REVISORE\n${rev}`;
+  const done=()=>{ btn.textContent='Copiati ✓'; setTimeout(()=>btn.textContent=t,1600); };
+  navigator.clipboard.writeText(testo).then(done).catch(()=>{ const tmp=document.createElement('textarea'); tmp.value=testo; tmp.style.position='fixed'; tmp.style.opacity='0'; document.body.appendChild(tmp); tmp.select(); try{document.execCommand('copy');}catch(e){} tmp.remove(); done(); });
+});
+
+// pulsante flottante mobile: porta al giudizio o torna in cima
+(function(){
+  const fab=document.getElementById('fabResult'), panel=document.getElementById('outPanel');
+  let atTop=true;
+  fab.addEventListener('click',()=>{
+    if(atTop){ panel.scrollIntoView({behavior:'smooth',block:'start'}); }
+    else{ window.scrollTo({top:0,behavior:'smooth'}); }
+  });
+  window.addEventListener('scroll',()=>{
+    const near = panel.getBoundingClientRect().top < window.innerHeight*0.6;
+    if(near && atTop){ atTop=false; fab.textContent='Scheda ↑'; }
+    else if(!near && !atTop){ atTop=true; fab.textContent='Giudizio ↓'; }
+  },{passive:true});
+})();
+document.getElementById('btnLocal').addEventListener('click',()=>{ variant++; const d=raccogli(); document.getElementById('giudizio').value=sintesiCompilatore(d); document.getElementById('giudizioRev').value=sintesiRevisore(d); lastMode='local'; });
+document.getElementById('btnCopy').addEventListener('click',()=>{
+  const ta=document.getElementById('giudizio'); ta.select();
+  navigator.clipboard.writeText(ta.value).then(()=>{const m=document.getElementById('copiedMsg');m.style.display='inline';setTimeout(()=>m.style.display='none',1800);}).catch(()=>document.execCommand('copy'));
+});
+document.getElementById('btnCopyRev').addEventListener('click',()=>{
+  const ta=document.getElementById('giudizioRev'); ta.select();
+  navigator.clipboard.writeText(ta.value).then(()=>{const m=document.getElementById('copiedMsgRev');m.style.display='inline';setTimeout(()=>m.style.display='none',1800);}).catch(()=>document.execCommand('copy'));
+});
+document.getElementById('btnPrint').addEventListener('click',()=>window.print());
+
+// registro Excel
+document.getElementById('btnAddReg').addEventListener('click',regAdd);
+document.getElementById('btnXlsx').addEventListener('click',regDownload);
+document.getElementById('btnClearReg').addEventListener('click',regClear);
+regLoad(); regCountUpdate();
+
+build();
+</script>
+</body>
+</html>
